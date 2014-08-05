@@ -10,34 +10,28 @@ _start:
 	lsl r1,#18
 	str r1,[r0,#4]
 
-	// Why does this not work?!@
-	// It definitely worked once! :(
-	// mov r1,#4
-	// str r1,[r0,#5]
-
+	// 16th pin is our target!
 	mov r1,#1
 	lsl r1,#16
 
 turnon$:
 	// Set the GPCLR{16} bit
 	str r1,[r0,#40]  // #40 --> 0x28
+	mov r2,#0x3F0000 // initialize counter
+	mov r3,#1	 // set flag to ON
 
-	mov r2,#0x3F0000
-wait1$:
+wait$:
 	sub r2,#1
 	cmp r2,#0
-	bne wait1$
+	bne wait$
+
+	cmp r3,#1
+	bne turnon$
 
 turnoff$:
-	mov r1,#1
-	lsl r1,#16
 	// Set the GPSET{16} bit
 	str r1,[r0,#28]
+	mov r2,#0x3F0000 // initialize counter
+	mov r3,#0	 // set flag to off
 
-	mov r2,#0x3F0000
-wait2$:
-	sub r2,#1
-	cmp r2,#0
-	bne wait2$
-
-	b turnon$
+	b wait$
