@@ -15,11 +15,29 @@ _start:
 	// mov r1,#4
 	// str r1,[r0,#5]
 
-	// Turn off the GPIO pin to turn the LED on
 	mov r1,#1
 	lsl r1,#16
+
+turnon$:
+	// Set the GPCLR{16} bit
 	str r1,[r0,#40]  // #40 --> 0x28
 
-loop$:
-	// Loop forever
-	b loop$
+	mov r2,#0x3F0000
+wait1$:
+	sub r2,#1
+	cmp r2,#0
+	bne wait1$
+
+turnoff$:
+	mov r1,#1
+	lsl r1,#16
+	// Set the GPSET{16} bit
+	str r1,[r0,#28]
+
+	mov r2,#0x3F0000
+wait2$:
+	sub r2,#1
+	cmp r2,#0
+	bne wait2$
+
+	b turnon$
