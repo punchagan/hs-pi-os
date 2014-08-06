@@ -3,35 +3,51 @@
 	.globl _start
 
 _start:
-	ldr r0,=0x20200000
+	b main
+	.section .text
+main:
+	mov sp,#0x8000
 
 	// Make pin16 an output pin.
-	mov r1,#1
-	lsl r1,#18
-	str r1,[r0,#4]
+	pinNum .req r0
+	pinFunc .req r1
+	mov pinNum,#16
+	mov pinFunc,#1
+	bl SetGpioFunction
+	.unreq pinNum
+	.unreq pinFunc
 
-	// 16th pin is our target!
-	mov r1,#1
-	lsl r1,#16
 
 turnon$:
 	// Set the GPCLR{16} bit
-	str r1,[r0,#40]  // #40 --> 0x28
+	pinNum .req r0
+	pinVal .req r1
+	mov pinNum,#16
+	mov pinVal,#0
+	.unreq pinNum
+	.unreq pinVal
+	bl SetGpio
 	mov r2,#0x3F0000 // initialize counter
-	mov r3,#1	 // set flag to ON
+	mov r4,#1	 // set flag to on
 
 wait$:
 	sub r2,#1
 	cmp r2,#0
 	bne wait$
 
-	cmp r3,#1
+	cmp r4,#1
 	bne turnon$
 
 turnoff$:
 	// Set the GPSET{16} bit
-	str r1,[r0,#28]
+	pinNum .req r0
+	pinVal .req r1
+	mov pinNum,#16
+	mov pinVal,#1
+	.unreq pinNum
+	.unreq pinVal
+	bl SetGpio
 	mov r2,#0x3F0000 // initialize counter
-	mov r3,#0	 // set flag to off
+	mov r4,#0	 // set flag to off
 
 	b wait$
