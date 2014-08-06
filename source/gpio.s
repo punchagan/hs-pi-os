@@ -20,9 +20,19 @@ functionLoop$:
 	addhi r0,#4
 	bhi functionLoop$
 
-	add r2, r2,lsl #1
+	add r2, r2,lsl #1  /* Multiply by 3 */
 	lsl r1,r2
-	// fixme: all the other GPIO values are being overwritten
+
+	/* Clear the bits corresponding to the pin we wish to use */
+	push {r4}
+	ldr r3,[r0]
+	mov r4,#7
+	lsl r4,r2
+	bic r3,r3,r4
+	pop {r4}
+
+	orr r1, r1, r3  // Change only the bits corresponding to our pin.
+
 	str r1,[r0]
 	pop {pc}
 
