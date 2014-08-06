@@ -21,10 +21,14 @@ waitLoop$:
 	cmp targetTime, currentTime
 	bhi waitLoop$
 
+	.unreq targetTime
+	.unreq currentTime
+	.unreq waitTime
+
 	pop {pc}
 
 readClock:
 	push {lr}
 	bl GetTimerAddress
-	ldr currentTime, [r0,#4]
+	ldr r2, [r0,#4]
 	pop {pc}
