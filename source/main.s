@@ -17,7 +17,6 @@ main:
 	.unreq pinNum
 	.unreq pinFunc
 
-
 turnon$:
 	// Set the GPCLR{16} bit
 	pinNum .req r0
@@ -27,16 +26,9 @@ turnon$:
 	.unreq pinNum
 	.unreq pinVal
 	bl SetGpio
-	mov r2,#0x3F0000 // initialize counter
-	mov r4,#1	 // set flag to on
 
-wait$:
-	sub r2,#1
-	cmp r2,#0
-	bne wait$
-
-	cmp r4,#1
-	bne turnon$
+	ldr r0,=500000
+	bl wait
 
 turnoff$:
 	// Set the GPSET{16} bit
@@ -47,7 +39,8 @@ turnoff$:
 	.unreq pinNum
 	.unreq pinVal
 	bl SetGpio
-	mov r2,#0x3F0000 // initialize counter
-	mov r4,#0	 // set flag to off
 
-	b wait$
+	ldr r0,=500000
+	bl wait
+
+	b turnon$
